@@ -1,0 +1,8 @@
+opencv-contrib-python
+opencv-python
+matplotlib
+numpy
+scipy
+scikit-image
+flask
+google-cloud-vision
