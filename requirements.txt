@@ -6,3 +6,5 @@ scipy
 scikit-image
 flask
 google-cloud-vision
+imutils
+tensorflow

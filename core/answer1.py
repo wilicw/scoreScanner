@@ -7,13 +7,13 @@ import itertools
 import imutils
 
 
-img = cv2.imread("answer1.jpg")
+img = cv2.imread("sct4.jpg")
 blur = cv2.GaussianBlur(img, (3, 3), 0)
 img1 = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
 
-img = cv2.imread("answer3.jpg")
-blur = cv2.GaussianBlur(img, (3, 3), 0)
-img2 = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
+img = cv2.imread("locationPt.png")
+# blur = cv2.GaussianBlur(img, (3, 3), 0)
+img2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 detector = cv2.ORB_create()

@@ -25,8 +25,8 @@ class flat2grid:
             10,
             cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
             cv2.THRESH_BINARY,
-            45,
-            0,
+            35,
+            -5,
         )
         rows, cols = self.__shape
         scale = 40
@@ -73,20 +73,26 @@ class flat2grid:
             if len(end) != 0:
                 end = end[0]
                 boxes.append([start, end])
-            elif (
-                self.__shape[1] - 30 > start[0] > self.__shape[1] - 70
-                and start[1] < self.__shape[0] - 20
-            ):
-                end = (start[0] + 60, start[1] + 28)
-                boxes.append([start, end])
             dots.remove(start)
         for box in boxes:
-            cv2.rectangle(
-                self.img,
-                (box[0][0], box[0][1]),
-                (box[1][0], box[1][1]),
-                (255, 255, 0),
-                2,
-            )
-            crop = self.img[box[0][1] : box[1][1], box[0][0] : box[1][0]]
-        plt.imshow(self.img), plt.show()
+            if (
+                np.linalg.norm(
+                    np.array([box[0][0], box[0][1]]) - np.array([box[1][0], box[1][1]])
+                )
+                < 25
+            ):
+                continue
+            # cv2.rectangle(
+            #     self.img,
+            #     (box[0][0], box[0][1]),
+            #     (box[1][0], box[1][1]),
+            #     (255, 0, 0),
+            #     1,
+            # )
+            margin = 5
+            crop = self.img[
+                box[0][1] + margin : box[1][1] - margin // 2,
+                box[0][0] + margin : box[1][0] - margin // 2,
+            ]
+            ret, thresh1 = cv2.threshold(crop, 150, 255, cv2.THRESH_BINARY_INV)
+            plt.imshow(thresh1, cmap="gray"), plt.show()

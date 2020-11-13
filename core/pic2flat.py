@@ -1,10 +1,11 @@
 import cv2
+from matplotlib import cm
 import numpy as np
 from matplotlib import pyplot as plt
 import itertools
 
 
-class pic2flat():
+class pic2flat:
     def __init__(self, __img):
         self.img = __img
         self.__final = None
@@ -16,60 +17,89 @@ class pic2flat():
 
     def __preprocess(self):
         self.__bw_img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
-        self.__blur = cv2.GaussianBlur(self.__bw_img, (5, 5), 0)
+        self.__blur = cv2.GaussianBlur(self.__bw_img, (3, 3), 0)
         self.__final = None
         self.__shape = self.img.shape
 
     def __findEdge(self):
         edges = cv2.Canny(self.__blur, 0, 180)
         contours, hierarchy = cv2.findContours(
-            edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
+        )
         hierarchy = hierarchy[0]
-        found = []
+        location_point_7, location_point_5 = [], []
         for i in range(len(contours)):
             k = i
             c = 0
             while hierarchy[k][2] != -1:
                 k = hierarchy[k][2]
                 c = c + 1
-            if c >= 5:
-                found.append(i)
-        found = sorted(found, key=lambda x: cv2.contourArea(contours[x]))[:3]
-        boxes = []
-        for i in found:
+            if c == 7:
+                location_point_7.append(i)
+            if c == 5:
+                location_point_5.append(i)
+
+        location_point_5 = sorted(
+            location_point_5, key=lambda x: cv2.contourArea(contours[x])
+        )[1:4]
+        location_point_7 = sorted(
+            location_point_7, key=lambda x: cv2.contourArea(contours[x])
+        )[:1]
+
+        location_box_5 = []
+        for i in location_point_5:
             rect = cv2.minAreaRect(contours[i])
             box = cv2.boxPoints(rect)
             box = np.int0(box)
             box = list(map(np.array, box))
-            boxes.append(box)
-        return boxes
+            location_box_5.append(box)
+            # cv2.circle(self.img, (box[0][0], box[0][1]), 2, (255, 0, 0), 2)
+        location_box_7 = []
+        for i in location_point_7:
+            rect = cv2.minAreaRect(contours[i])
+            box = cv2.boxPoints(rect)
+            box = np.int0(box)
+            box = list(map(np.array, box))
+            location_box_7.append(box)
+            # cv2.circle(self.img, (box[0][0], box[0][1]), 2, (255, 255, 0), 2)
+        # plt.imshow(self.img), plt.show()
+        return location_box_5, location_box_7
 
     def __contoursprocess(self):
-        img_center = np.array(
-            [self.__shape[0]/2, self.__shape[1]/2], dtype='int32')
-        edge = []
-        for box in self.__findEdge():
-            index = np.array([np.linalg.norm(dot - img_center)
-                              for dot in box]).argmin()
-            edge.append(box[index])
-        _ = list(itertools.combinations(edge, 2))
-        cross = _[np.array([np.linalg.norm(i[0] - i[1]) for i in _]).argmax()]
-        cross_line_middle = ((cross[1] + cross[0])/2).astype(int)
-        corner = None
-        for _ in edge:
-            if not list(filter(lambda x: np.array_equal(x, _), cross)):
-                corner = _
-        pos = [800, 1000]
-        src = np.float32([
-            [corner[0], corner[1]],
-            [cross[0][0], cross[0][1]],
-            [cross[1][0], cross[1][1]]
-        ])
-        dst = np.float32([
-            [500, 500],
-            [500+pos[0], 500],
-            [500, 500+pos[1]]
-        ])
-        M = cv2.getAffineTransform(src, dst)
-        cutImage = cv2.warpAffine(self.img, M, (1000+pos[1], 1000+pos[1]))
-        self.__final = cutImage[495: 505+pos[1], 495:505+pos[0]]
+        img_center = np.array([self.__shape[0] / 2, self.__shape[1] / 2], dtype="int32")
+        l5_edge = []
+        l7_edge = None
+        location_box_5, location_box_7 = self.__findEdge()
+        for box in location_box_5:
+            index = np.array([np.linalg.norm(dot - img_center) for dot in box]).argmin()
+            l5_edge.append(box[index])
+        for box in location_box_7:
+            index = np.array([np.linalg.norm(dot - img_center) for dot in box]).argmin()
+            l7_edge = box[index]
+        corner = sorted(
+            l5_edge, key=lambda x: np.linalg.norm(np.array([x]) - np.array([l7_edge]))
+        )
+        pos = [1600, 2000]
+        src = np.float32(
+            [
+                [corner[2][0], corner[2][1]],
+                [corner[1][0], corner[1][1]],
+                [corner[0][0], corner[0][1]],
+                [l7_edge[0], l7_edge[1]],
+            ]
+        )
+        dst = np.float32(
+            [
+                [500, 500],
+                [500 + pos[0], 500],
+                [500, 500 + pos[1]],
+                [500 + pos[0], 500 + pos[1]],
+            ]
+        )
+        M = cv2.getPerspectiveTransform(src, dst)
+        cutImage = cv2.warpPerspective(self.img, M, (1000 + pos[1], 1000 + pos[1]))
+        cut = 2
+        self.__final = cutImage[
+            500 + cut : 500 - cut + pos[1], 500 + cut : 500 - cut + pos[0]
+        ]
+        plt.imshow(self.__final), plt.show()
