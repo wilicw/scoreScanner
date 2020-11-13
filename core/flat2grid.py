@@ -8,7 +8,7 @@ from skimage import measure
 
 class flat2grid:
     def __init__(self, __img):
-        self.img = __img
+        self.img = __img.copy()
         self.__final = None
         self.__preprocess()
         self.__process()
@@ -95,4 +95,4 @@ class flat2grid:
                 box[0][0] + margin : box[1][0] - margin // 2,
             ]
             ret, thresh1 = cv2.threshold(crop, 150, 255, cv2.THRESH_BINARY_INV)
-            plt.imshow(thresh1, cmap="gray"), plt.show()
+            # plt.imshow(thresh1, cmap="gray"), plt.show()
