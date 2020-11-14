@@ -3,6 +3,7 @@ from matplotlib.pyplot import box, grid
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+from numpy.core.multiarray import result_type
 from skimage import measure
 
 
@@ -74,6 +75,7 @@ class flat2grid:
                 end = end[0]
                 boxes.append([start, end])
             dots.remove(start)
+        tableBox = []
         for box in boxes:
             if (
                 np.linalg.norm(
@@ -95,4 +97,19 @@ class flat2grid:
                 box[0][0] + margin : box[1][0] - margin // 2,
             ]
             ret, thresh1 = cv2.threshold(crop, 150, 255, cv2.THRESH_BINARY_INV)
+            tableBox.append([thresh1, box[0]])
+            # print(box[0], box[1])
             # plt.imshow(thresh1, cmap="gray"), plt.show()
+        h = 50
+        margin = 5
+        sortedBox = []
+        for i in range(40):
+            hboxes = filter(
+                lambda x: (i * h - margin < x[1][1] < (i + 1) * h - margin), tableBox
+            )
+            for index, box in enumerate(sorted(hboxes, key=lambda x: x[1][0])):
+                sortedBox.append(((i, index), box[0]))
+        for box in sortedBox:
+            print(box[0])
+            plt.imshow(box[1], cmap="gray"), plt.show()
+        self.__final = sortedBox
