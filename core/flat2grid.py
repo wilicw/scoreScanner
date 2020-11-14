@@ -1,9 +1,6 @@
-from itertools import groupby
-from matplotlib.pyplot import box, grid
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
-from numpy.core.multiarray import result_type
 from skimage import measure
 
 
@@ -20,7 +17,6 @@ class flat2grid:
     def __preprocess(self):
         self.__bw_img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         self.__shape = self.__bw_img.shape
-        # cv2.rectangle(self.__bw_img, (0, 0), (800, 1000), (0, 0, 0), 3)
         binary = cv2.adaptiveThreshold(
             ~self.__bw_img,
             10,
@@ -84,22 +80,13 @@ class flat2grid:
                 < 25
             ):
                 continue
-            # cv2.rectangle(
-            #     self.img,
-            #     (box[0][0], box[0][1]),
-            #     (box[1][0], box[1][1]),
-            #     (255, 0, 0),
-            #     1,
-            # )
             margin = 5
             crop = self.img[
                 box[0][1] + margin : box[1][1] - margin // 2,
                 box[0][0] + margin : box[1][0] - margin // 2,
             ]
-            ret, thresh1 = cv2.threshold(crop, 150, 255, cv2.THRESH_BINARY_INV)
+            _, thresh1 = cv2.threshold(crop, 160, 255, cv2.THRESH_BINARY_INV)
             tableBox.append([thresh1, box[0]])
-            # print(box[0], box[1])
-            # plt.imshow(thresh1, cmap="gray"), plt.show()
         h = 50
         margin = 5
         sortedBox = []

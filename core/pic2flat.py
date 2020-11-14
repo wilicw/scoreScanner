@@ -1,8 +1,6 @@
 import cv2
-from matplotlib import cm
 import numpy as np
 from matplotlib import pyplot as plt
-import itertools
 
 
 class pic2flat:
@@ -53,7 +51,6 @@ class pic2flat:
             box = np.int0(box)
             box = list(map(np.array, box))
             location_box_5.append(box)
-            # cv2.circle(self.img, (box[0][0], box[0][1]), 2, (255, 0, 0), 2)
         location_box_7 = []
         for i in location_point_7:
             rect = cv2.minAreaRect(contours[i])
@@ -61,8 +58,6 @@ class pic2flat:
             box = np.int0(box)
             box = list(map(np.array, box))
             location_box_7.append(box)
-            # cv2.circle(self.img, (box[0][0], box[0][1]), 2, (255, 255, 0), 2)
-        # plt.imshow(self.img), plt.show()
         return location_box_5, location_box_7
 
     def __contoursprocess(self):
