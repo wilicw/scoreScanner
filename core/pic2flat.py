@@ -97,4 +97,4 @@ class pic2flat:
         self.__final = cutImage[
             500 + cut : 500 - cut + pos[1], 500 + cut : 500 - cut + pos[0]
         ]
-        plt.imshow(self.__final), plt.show()
+        # plt.imshow(self.__final), plt.show()

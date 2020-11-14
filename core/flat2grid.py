@@ -85,8 +85,9 @@ class flat2grid:
                 box[0][1] + margin : box[1][1] - margin // 2,
                 box[0][0] + margin : box[1][0] - margin // 2,
             ]
-            _, thresh1 = cv2.threshold(crop, 160, 255, cv2.THRESH_BINARY_INV)
-            tableBox.append([thresh1, box[0]])
+            crop = cv2.cvtColor(crop.copy(), cv2.COLOR_BGR2GRAY)
+            _, th = cv2.threshold(crop, 160, 255, cv2.THRESH_BINARY_INV)
+            tableBox.append([th, box[0]])
         h = 50
         margin = 5
         sortedBox = []
@@ -96,7 +97,4 @@ class flat2grid:
             )
             for index, box in enumerate(sorted(hboxes, key=lambda x: x[1][0])):
                 sortedBox.append(((i, index), box[0]))
-        for box in sortedBox:
-            print(box[0])
-            plt.imshow(box[1], cmap="gray"), plt.show()
         self.__final = sortedBox
