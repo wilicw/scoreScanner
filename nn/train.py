@@ -26,17 +26,19 @@ y = np.concatenate((y_train, y_test))
 model = Sequential(
     [
         Input(shape=input_shape),
-        Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        Conv2D(32, kernel_size=(5, 5), activation="relu"),
         MaxPooling2D(pool_size=(2, 2)),
         Conv2D(64, kernel_size=(3, 3), activation="relu"),
         MaxPooling2D(pool_size=(2, 2)),
         Flatten(),
-        Dropout(0.5),
+        Dropout(0.2),
+        Dense(256, activation="relu"),
         Dense(num_classes, activation="softmax"),
     ]
 )
 
 print(model.summary())
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
+
 model.fit(x, y, epochs=15, batch_size=128, verbose=1)
 model.save("mnist_cnn.h5")
