@@ -86,7 +86,7 @@ class flat2grid:
                 box[0][0] + margin : box[1][0] - margin // 2,
             ]
             crop = cv2.cvtColor(crop.copy(), cv2.COLOR_BGR2GRAY)
-            _, th = cv2.threshold(crop, 160, 255, cv2.THRESH_BINARY_INV)
+            _, th = cv2.threshold(crop, 170, 255, cv2.THRESH_BINARY_INV)
             tableBox.append([th, box[0]])
         h = 50
         margin = 5

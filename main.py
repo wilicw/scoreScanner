@@ -20,12 +20,15 @@ girdImg = flat2grid(flatImg).getFinal()
 
 
 for box in girdImg:
-    print(box[0])
-    plt.imshow(box[1], cmap="gray"), plt.show()
     # plt.imsave("digit.png", box[1], cmap="gray", format="png")
-    for digit in sepdigit(box[1]).getFinal():
+    digits = sepdigit(box[1]).getFinal()
+    if len(digits) == 0:
+        continue
+    print(box[0], end=" ")
+    for digit in digits:
         # plt.imshow(digit, cmap="gray"), plt.show()
         digit = digit.astype("float32") / 255
         digit = np.expand_dims(digit, -1)
-        print(np.argmax(predict(digit)), end="")
+        print(predict(digit) * 1000, end="")
+    plt.imshow(box[1], cmap="gray"), plt.show()
     print()
