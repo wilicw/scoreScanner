@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-from matplotlib import pyplot as plt
 from skimage import measure
 
 
@@ -88,13 +87,19 @@ class flat2grid:
             crop = cv2.cvtColor(crop.copy(), cv2.COLOR_BGR2GRAY)
             _, th = cv2.threshold(crop, 170, 255, cv2.THRESH_BINARY_INV)
             tableBox.append([th, box[0]])
-        h = 50
-        margin = 5
         sortedBox = []
-        for i in range(40):
-            hboxes = filter(
-                lambda x: (i * h - margin < x[1][1] < (i + 1) * h - margin), tableBox
-            )
-            for index, box in enumerate(sorted(hboxes, key=lambda x: x[1][0])):
-                sortedBox.append(((i, index), box[0]))
+        y_sorted = sorted(tableBox, key=lambda x: x[1][1])
+        x_sorted = [y_sorted[0]]
+        i, j = 0, 0
+        for index in range(1, len(y_sorted)):
+            if abs(y_sorted[index - 1][1][1] - y_sorted[index][1][1]) < 10:
+                x_sorted.append(y_sorted[index])
+                if index != len(y_sorted) - 1:
+                    continue
+            j = 0
+            for item in sorted(x_sorted, key=lambda x: x[1][0]):
+                sortedBox.append(((i, j), item[0]))
+                j += 1
+            x_sorted = [y_sorted[index]]
+            i += 1
         self.__final = sortedBox
