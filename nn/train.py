@@ -31,7 +31,7 @@ model = Sequential(
         Conv2D(64, kernel_size=(3, 3), activation="relu"),
         MaxPooling2D(pool_size=(2, 2)),
         Flatten(),
-        Dropout(0.2),
+        Dropout(0.5),
         Dense(256, activation="relu"),
         Dense(num_classes, activation="softmax"),
     ]

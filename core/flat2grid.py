@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from skimage import measure
+from matplotlib import pyplot as plt
 
 
 class flat2grid:
@@ -85,8 +86,17 @@ class flat2grid:
                 box[0][0] + margin : box[1][0] - margin // 2,
             ]
             crop = cv2.cvtColor(crop.copy(), cv2.COLOR_BGR2GRAY)
-            _, th = cv2.threshold(crop, 170, 255, cv2.THRESH_BINARY_INV)
+            # crop = cv2.GaussianBlur(crop, (3, 3), 0)
+            var = cv2.meanStdDev(crop)[1]
+            if var < 7:
+                th = np.zeros((10, 10, 1), dtype="uint8")
+            else:
+                _, th = cv2.threshold(
+                    crop, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
+                )
             tableBox.append([th, box[0]])
+            # plt.imshow(th), plt.show()
+
         sortedBox = []
         y_sorted = sorted(tableBox, key=lambda x: x[1][1])
         x_sorted = [y_sorted[0]]

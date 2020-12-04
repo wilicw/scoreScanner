@@ -8,3 +8,5 @@ flask
 google-cloud-vision
 imutils
 tensorflow
+flask_restful
+flask_cors
