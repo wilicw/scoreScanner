@@ -12,10 +12,6 @@ import uuid, os, threading
 # from matplotlib import pyplot as plt
 # from tensorflow.python.keras.backend import shape
 
-import time
-
-start_time = time.time()
-
 
 def process(path, __uuid):
     img = cv2.imread(path)
