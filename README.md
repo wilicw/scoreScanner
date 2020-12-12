@@ -3,10 +3,8 @@
 ## Project Architecture
 
 ```
-core
-├── __init__.py
-├── digitreg.py
-├── flat2grid.py
-├── pic2flat.py
-└── sepdigit.py
+main.py - flask api
+nn - The CNN Model tranning script and core script
+core - cv2 images processing
+app - android app
 ```
