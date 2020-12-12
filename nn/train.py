@@ -1,5 +1,7 @@
 import numpy as np
 import imutils
+import imgaug as ia
+import imgaug.augmenters as iaa
 from tensorflow.keras import Sequential, Input, layers
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 from tensorflow.keras.datasets import mnist
@@ -9,8 +11,9 @@ num_classes = 10
 input_shape = (28, 28, 1)
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x = np.concatenate((x_train, x_test)).astype("float32") / 255
-y = np.concatenate((y_train, y_test))
-# data augmentation
+y = np.concatenate((y_train, y_test))  # data augmentation
+
+
 def shift_image(image, dx, dy):
     return imutils.translate(image, dx, dy)
 
@@ -19,21 +22,36 @@ print("Creating Augmented Dataset...")
 x_augmented = [image for image in x]
 y_augmented = [image for image in y]
 
-offset = 2
-rotate_deg = 15
-for dx, dy in ((offset, 0), (-offset, 0), (0, offset), (0, -offset)):
-    for image, label in zip(x, y):
-        # shift images
+offset = 5
+rotate_deg = 45
+shear_deg = 45
+rotate = iaa.Affine(rotate=(-rotate_deg, rotate_deg))
+gaussian_noise = iaa.AdditiveGaussianNoise(5, 5)
+crop = iaa.Crop(percent=(0, 0.3))
+shear = iaa.Affine(shear=(0, shear_deg))
+
+for image, label in zip(x, y):
+    for dx, dy in ((offset, 0), (-offset, 0), (0, offset), (0, -offset)):
+        # shift
         shift = shift_image(image, dx, dy)
         x_augmented.append(shift)
         y_augmented.append(label)
-        # rotate images
-        rotate_15 = imutils.rotate(image, rotate_deg)
-        x_augmented.append(rotate_15)
-        y_augmented.append(label)
-        rotate_15 = imutils.rotate(image, -rotate_deg)
-        x_augmented.append(rotate_15)
-        y_augmented.append(label)
+    # rotate
+    rotate_img = rotate.augment_image(image)
+    x_augmented.append(rotate_img)
+    y_augmented.append(label)
+    # noise
+    noise_img = gaussian_noise.augment_image(image)
+    x_augmented.append(noise_img)
+    y_augmented.append(label)
+    # shear
+    shear_img = shear.augment_image(image)
+    x_augmented.append(shear_img)
+    y_augmented.append(label)
+    # crop
+    crop_img = shear.augment_image(image)
+    x_augmented.append(crop_img)
+    y_augmented.append(label)
 
 x_augmented = np.array(x_augmented)
 y_augmented = np.array(y_augmented)
@@ -60,6 +78,7 @@ model = Sequential(
         MaxPooling2D(pool_size=(2, 2)),
         Flatten(),
         Dropout(0.5),
+        Dense(128, activation="relu"),
         Dense(256, activation="relu"),
         Dense(num_classes, activation="softmax"),
     ]

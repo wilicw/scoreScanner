@@ -10,3 +10,4 @@ imutils
 tensorflow
 flask_restful
 flask_cors
+imgaug
