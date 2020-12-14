@@ -82,6 +82,7 @@ class getScoreTable(Resource):
             return jsonify({"status": 418})
 
 
+app.config["JSONIFY_PRETTYPRINT_REGULAR"] = False
 api.add_resource(uploadScoreTable, "/api/upload/scoreTable")
 api.add_resource(getScoreTable, "/api/get/scoreTable/<_uuid>", "/api/get/scoreTable")
 
