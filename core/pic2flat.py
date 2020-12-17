@@ -22,12 +22,9 @@ class pic2flat:
         self.__shape = self.img.shape
 
     def __findEdge(self):
-        th3 = cv2.adaptiveThreshold(
-            self.__blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 3
-        )
-        # ret, thresh1 = cv2.threshold(self.__blur, 127, 255, cv2.THRESH_BINARY)
-        cv2.imwrite("/tmp/th.png", th3)
-        edges = cv2.Canny(th3, 30, 180)
+        ret, thresh1 = cv2.threshold(self.__blur, 127, 255, cv2.THRESH_BINARY)
+        cv2.imwrite("/tmp/th.png", thresh1)
+        edges = cv2.Canny(thresh1, 30, 180)
         cv2.imwrite("/tmp/edges.png", edges)
         contours, hierarchy = cv2.findContours(
             edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
