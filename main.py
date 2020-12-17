@@ -78,7 +78,7 @@ class getScoreTable(Resource):
     def get(self, _uuid):
         if _uuid.isalnum():
             if os.path.isfile(f"/tmp/{_uuid}.csv"):
-                return send_from_directory("/tmp", f"{_uuid}.csv")
+                return send_from_directory("/tmp", f"{_uuid}.csv", as_attachment=True)
             else:
                 return jsonify({"status": 404, "msg": "File not exist or not yet!"})
         else:
