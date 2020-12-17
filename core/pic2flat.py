@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from skimage.filters import threshold_yen
+from skimage.exposure import rescale_intensity
 from matplotlib import pyplot as plt
 
 
@@ -20,7 +22,8 @@ class pic2flat:
         self.__shape = self.img.shape
 
     def __findEdge(self):
-        edges = cv2.Canny(self.__blur, 0, 180)
+        _, thresh1 = cv2.threshold(self.__blur, 100, 255, cv2.THRESH_BINARY)
+        edges = cv2.Canny(thresh1, 0, 200)
         contours, hierarchy = cv2.findContours(
             edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
         )

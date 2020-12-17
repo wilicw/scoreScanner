@@ -14,6 +14,7 @@ import uuid, os, threading
 
 
 def process(path, __uuid):
+    i = 0
     img = cv2.imread(path)
     flatImg = pic2flat(img).getFinal()
     gridImg = flat2grid(flatImg).getFinal()
@@ -34,14 +35,16 @@ def process(path, __uuid):
             else:
                 digitsStr = ""
                 for digit in digits:
+                    # cv2.imwrite(f"/tmp/{i}.png", digit)
                     # plt.imshow(digit, cmap="gray"), plt.show()
                     digit = digit.astype("float32") / 255
-                    digit = np.expand_dims(digit, -1)
-                    predictResult = predict(digit)
-                    # if max(predictResult) < 0.55:
-                    #     digitsStr += "X"
-                    # else:
-                    digitsStr += str(np.argmax(predictResult))
+                    if 0.08 <= np.sum(digit) / 784 <= 0.75:
+                        digit = np.expand_dims(digit, -1)
+                        predictResult = predict(digit)
+                        digitsStr += str(np.argmax(predictResult))
+                    else:
+                        digitsStr += ""
+                    i += 1
                 resultCsv += f"{digitsStr},"
         try:
             if box[0][1] > gridImg[index + 1][0][1]:
