@@ -23,7 +23,7 @@ class pic2flat:
 
     def __findEdge(self):
         yen_threshold = threshold_yen(self.__blur)
-        bright = rescale_intensity(self.__blur, (0, yen_threshold), (0, 255))
+        bright = rescale_intensity(self.__blur, (80, yen_threshold), (0, 255))
         cv2.imwrite("/tmp/th.png", bright)
         bright = cv2.imread("/tmp/th.png")
         edges = cv2.Canny(bright, 0, 200)
