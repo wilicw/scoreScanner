@@ -22,49 +22,54 @@ class pic2flat:
         self.__shape = self.img.shape
 
     def __findEdge(self):
-        ret, thresh1 = cv2.threshold(self.__blur, 127, 255, cv2.THRESH_BINARY)
-        cv2.imwrite("/tmp/th.png", thresh1)
-        edges = cv2.Canny(thresh1, 30, 180)
-        edges = cv2.GaussianBlur(edges, (3, 3), 0)
-        cv2.imwrite("/tmp/edges.png", edges)
-        contours, hierarchy = cv2.findContours(
-            edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
-        )
-        hierarchy = hierarchy[0]
-        location_point_7, location_point_5 = [], []
-        for i in range(len(contours)):
-            k = i
-            c = 0
-            while hierarchy[k][2] != -1:
-                k = hierarchy[k][2]
-                c = c + 1
-            if c == 7:
-                location_point_7.append(i)
-            if c == 5:
-                location_point_5.append(i)
+        for i in range(2):
+            ret, thresh1 = cv2.threshold(
+                self.__blur.copy(), 127, 255, cv2.THRESH_BINARY
+            )
+            cv2.imwrite("/tmp/th.png", thresh1)
+            edges = cv2.Canny(thresh1, 30, 180)
+            if i == 0:
+                edges = cv2.GaussianBlur(edges, (3, 3), 0)
+            cv2.imwrite(f"/tmp/edges{i}.png", edges)
+            contours, hierarchy = cv2.findContours(
+                edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
+            )
+            hierarchy = hierarchy[0]
+            location_point_7, location_point_5 = [], []
+            for i in range(len(contours)):
+                k = i
+                c = 0
+                while hierarchy[k][2] != -1:
+                    k = hierarchy[k][2]
+                    c = c + 1
+                if c == 7:
+                    location_point_7.append(i)
+                if c == 5:
+                    location_point_5.append(i)
 
-        location_point_5 = sorted(
-            location_point_5, key=lambda x: cv2.contourArea(contours[x])
-        )[1:4]
-        location_point_7 = sorted(
-            location_point_7, key=lambda x: cv2.contourArea(contours[x])
-        )[:1]
+            location_point_5 = sorted(
+                location_point_5, key=lambda x: cv2.contourArea(contours[x])
+            )[1:4]
+            location_point_7 = sorted(
+                location_point_7, key=lambda x: cv2.contourArea(contours[x])
+            )[:1]
 
-        location_box_5 = []
-        for i in location_point_5:
-            rect = cv2.minAreaRect(contours[i])
-            box = cv2.boxPoints(rect)
-            box = np.int0(box)
-            box = list(map(np.array, box))
-            location_box_5.append(box)
-        location_box_7 = []
-        for i in location_point_7:
-            rect = cv2.minAreaRect(contours[i])
-            box = cv2.boxPoints(rect)
-            box = np.int0(box)
-            box = list(map(np.array, box))
-            location_box_7.append(box)
-        return location_box_5, location_box_7
+            location_box_5 = []
+            for i in location_point_5:
+                rect = cv2.minAreaRect(contours[i])
+                box = cv2.boxPoints(rect)
+                box = np.int0(box)
+                box = list(map(np.array, box))
+                location_box_5.append(box)
+            location_box_7 = []
+            for i in location_point_7:
+                rect = cv2.minAreaRect(contours[i])
+                box = cv2.boxPoints(rect)
+                box = np.int0(box)
+                box = list(map(np.array, box))
+                location_box_7.append(box)
+            if len(location_box_7) == 1 and len(location_box_5) == 3:
+                return location_box_5, location_box_7
 
     def __contoursprocess(self):
         img_center = np.array([self.__shape[0] / 2, self.__shape[1] / 2], dtype="int32")
