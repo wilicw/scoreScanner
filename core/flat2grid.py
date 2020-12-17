@@ -16,6 +16,7 @@ class flat2grid:
 
     def __preprocess(self):
         self.__bw_img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
+        cv2.imwrite("/tmp/bin.png", self.__bw_img)
         self.__shape = self.__bw_img.shape
         binary = cv2.adaptiveThreshold(
             ~self.__bw_img,
