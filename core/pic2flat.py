@@ -25,6 +25,7 @@ class pic2flat:
         ret, thresh1 = cv2.threshold(self.__blur, 127, 255, cv2.THRESH_BINARY)
         cv2.imwrite("/tmp/th.png", thresh1)
         edges = cv2.Canny(thresh1, 30, 180)
+        edges = cv2.GaussianBlur(edges, (3, 3), 0)
         cv2.imwrite("/tmp/edges.png", edges)
         contours, hierarchy = cv2.findContours(
             edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
@@ -76,12 +77,14 @@ class pic2flat:
         for box in location_box_7:
             index = np.array([np.linalg.norm(dot - img_center) for dot in box]).argmin()
             l7_edge = box[index]
-        corner = sorted(l5_edge, key=lambda x: x[0] * 1000 + x[1])
+        corner = sorted(
+            l5_edge, key=lambda x: np.linalg.norm(np.array([x]) - np.array([l7_edge]))
+        )
         pos = [1600, 2000]
         src = np.float32(
             [
-                [corner[1][0], corner[1][1]],
                 [corner[2][0], corner[2][1]],
+                [corner[1][0], corner[1][1]],
                 [corner[0][0], corner[0][1]],
                 [l7_edge[0], l7_edge[1]],
             ]
