@@ -23,7 +23,7 @@ class pic2flat:
 
     def __findEdge(self):
         th3 = cv2.adaptiveThreshold(
-            self.__blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 5
+            self.__blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 3
         )
         # ret, thresh1 = cv2.threshold(self.__blur, 127, 255, cv2.THRESH_BINARY)
         cv2.imwrite("/tmp/th.png", th3)
