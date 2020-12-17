@@ -81,8 +81,8 @@ class pic2flat:
         src = np.float32(
             [
                 [corner[1][0], corner[1][1]],
-                [corner[0][0], corner[0][1]],
                 [corner[2][0], corner[2][1]],
+                [corner[0][0], corner[0][1]],
                 [l7_edge[0], l7_edge[1]],
             ]
         )
