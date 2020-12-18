@@ -22,14 +22,13 @@ class pic2flat:
         self.__shape = self.img.shape
 
     def __findEdge(self):
-        for i in range(2):
+        for i in [1, 3, 5]:
             ret, thresh1 = cv2.threshold(
                 self.__blur.copy(), 127, 255, cv2.THRESH_BINARY
             )
             cv2.imwrite("/tmp/th.png", thresh1)
             edges = cv2.Canny(thresh1, 30, 180)
-            if i == 0:
-                edges = cv2.GaussianBlur(edges, (3, 3), 0)
+            edges = cv2.GaussianBlur(edges, (i, i), 0)
             cv2.imwrite(f"/tmp/edges{i}.png", edges)
             contours, hierarchy = cv2.findContours(
                 edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE

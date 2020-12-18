@@ -23,7 +23,10 @@ class sepdigit:
             (x, y, w, h) = cv2.boundingRect(cnt)
             if w * h < 20:
                 continue
+            elif w < 3 or h < 3:
+                continue
             im = self.img[y : y + h, x : x + w]
+            im = im.astype("float32")
             try:
                 height, width = im.shape[0], im.shape[1]
                 width_new = 28
@@ -37,7 +40,7 @@ class sepdigit:
                 f[ay : im.shape[0] + ay, ax : ax + im.shape[1]] = im
                 digits.append([x, f])
             except Exception as e:
-                print(e)
+                print(w, h, e)
                 continue
         for d in sorted(digits, key=lambda x: x[0]):
             self.__final.append(d[1])

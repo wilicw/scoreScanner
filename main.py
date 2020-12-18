@@ -35,10 +35,10 @@ def process(path, __uuid):
             else:
                 digitsStr = ""
                 for digit in digits:
-                    # cv2.imwrite(f"/tmp/{i}.png", digit)
                     # plt.imshow(digit, cmap="gray"), plt.show()
-                    digit = digit.astype("float32") / 255
-                    if 0.08 <= np.sum(digit) / 784 <= 0.75:
+                    if 0.08 <= np.sum(digit) / 255 / 784 <= 0.75:
+                        # cv2.imwrite(f"/tmp/{i}.png", digit)
+                        digit = digit.astype("float32") / 255
                         digit = np.expand_dims(digit, -1)
                         predictResult = predict(digit)
                         digitsStr += str(np.argmax(predictResult))
